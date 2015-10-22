@@ -20,8 +20,6 @@ import android.view.View;
  */
 public class LoadingBar extends View {
 
-
-    private final Context context;
     /**
      * 进度条画笔
      */
@@ -55,7 +53,7 @@ public class LoadingBar extends View {
     /**
      * 进度条颜色
      */
-    private int mLoadingBarColor = 0xff0097A7;
+    private int mLoadingBarColor = 0xFF00BCD4;
     /**
      * 尾部进度
      */
@@ -79,12 +77,11 @@ public class LoadingBar extends View {
     /**
      * 旋转睡眠时间
      */
-    private static int PROGRESS_DELAY = 10;
+    private static int PROGRESS_DELAY = 5;
     /**
      * 进度条半径
      */
 
-    private float mRadius;
     /**
      * 加载完成动画路径1
      */
@@ -106,6 +103,10 @@ public class LoadingBar extends View {
      * 控件宽高
      */
     private int minSide;
+    /**
+     * 内边框
+     */
+    private static float padding = 20.0f;
 
     private Handler mHandlerFailed;
 
@@ -118,19 +119,16 @@ public class LoadingBar extends View {
 
     public LoadingBar(Context context) {
         super(context);
-        this.context = context;
         init(context, null);
     }
 
     public LoadingBar(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.context = context;
         init(context, attrs);
     }
 
     public LoadingBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        this.context = context;
         init(context, attrs);
     }
 
@@ -174,14 +172,14 @@ public class LoadingBar extends View {
         mRunnableFailed = new Runnable() {
             @Override
             public void run() {
-                if (pathX < minSide - 50) {
-                    pathX += 3.0f;
-                    pathY += 3.0f;
+                if (pathX < minSide - mCenterX / 3 - padding) {
+                    pathX += 5.0f;
+                    pathY += 5.0f;
                     setPaint1LineTo(pathX, pathY);
                     mHandlerFailed.postDelayed(mRunnableFailed, PROGRESS_DELAY);
-                } else if (pathX2 > 50) {
-                    pathX2 -= 3.0f;
-                    pathY2 += 3.0f;
+                } else if (pathX2 > mCenterX / 3 + padding) {
+                    pathX2 -= 5.0f;
+                    pathY2 += 5.0f;
                     setPaint2LineTo(pathX2, pathY2);
                     mHandlerFailed.postDelayed(mRunnableFailed, PROGRESS_DELAY);
                 }
@@ -191,14 +189,14 @@ public class LoadingBar extends View {
         mRunnableSuccess = new Runnable() {
             @Override
             public void run() {
-                if (pathX < mCenterX -10) {
-                    pathX += 3.3f;
-                    pathY += 3.0f;
+                if (pathX < mCenterX - 10) {
+                    pathX += 5.5f;
+                    pathY += 5.0f;
                     setPaint1LineTo(pathX, pathY);
                     mHandlerSuccess.postDelayed(mRunnableSuccess, PROGRESS_DELAY);
-                } else if (pathX < minSide -45) {
-                    pathX += 3.0f;
-                    pathY -= 3.3f;
+                } else if (pathX < minSide - mCenterX / 4 - padding-5) {
+                    pathX += 5.0f;
+                    pathY -= 5.5f;
                     setPaint1LineTo(pathX, pathY);
                     mHandlerSuccess.postDelayed(mRunnableSuccess, PROGRESS_DELAY);
                 }
@@ -229,14 +227,11 @@ public class LoadingBar extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = MeasureSpec.getSize(heightMeasureSpec);
-        minSide = (width + height) / 2;
+        minSide = width < height ? width : height;
         this.setMeasuredDimension(width, height);
         mCenterX = minSide / 2;
         mCenterY = minSide / 2;
-
-
-        mRectF.set(20.0f, 20.0f, minSide - 20.0f, minSide - 20.f);
-        mRadius = mCenterX * 0.8f;
+        mRectF.set(padding, padding, minSide - padding, minSide - padding);
     }
 
     @Override
@@ -284,7 +279,6 @@ public class LoadingBar extends View {
     public void loading() {
         isLoading = true;
         isChanse = false;
-
         mHandlerLoading.removeCallbacksAndMessages(null);
         mHandlerLoading.postDelayed(mRunnableLoading, PROGRESS_DELAY);
     }
@@ -302,22 +296,25 @@ public class LoadingBar extends View {
     }
 
     /**
-     * the animation of load data failed
+     * 失败动画
      */
     private void failed() {
-        pathX = 50;
-        pathY = 50;
+        pathX = padding + mCenterX / 3;
+        pathY = padding + mCenterX / 3;
         mPath1.moveTo(pathX, pathY);
-        pathY2 = 50;
-        pathX2 = minSide - 50;
+        pathX2 = minSide - mCenterX / 3 - padding;
+        pathY2 = padding + mCenterX / 3;
         mPath2.moveTo(pathX2, pathY2);
         mHandlerFailed.removeCallbacksAndMessages(null);
         mHandlerFailed.postDelayed(mRunnableFailed, PROGRESS_DELAY);
     }
 
+    /**
+     * 成功动画
+     */
     private void success() {
-        pathX = 40;
-        pathY = minSide / 2;
+        pathX = padding + mCenterX / 4;
+        pathY = mCenterY;
         mPath1.moveTo(pathX, pathY);
         mHandlerSuccess.removeCallbacksAndMessages(null);
         mHandlerSuccess.postDelayed(mRunnableSuccess, PROGRESS_DELAY);
