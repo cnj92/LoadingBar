@@ -56,13 +56,17 @@ public class LoadingBar extends View {
      */
     private int mLoadingBarColor = 0xff0097A7;
     /**
-     * 当前进度
+     * 尾部进度
      */
-    private int mCurrentProgress = 0;
+    private int mProgressFoot = 0;
+    /**
+     * 头部进度
+     */
+    private int mProgressHead = 0;
     /**
      * 进度最大值
      */
-    private int maxProgress = 10;
+    private int maxProgress = 100;
     /**
      * 是否正在加载
      */
@@ -70,11 +74,11 @@ public class LoadingBar extends View {
     /**
      * 第一次旋转
      */
-    private boolean isFirst;
+    private boolean isChanse;
     /**
      * 旋转睡眠时间
      */
-    private static int PROGRESS_DELAY = 100;
+    private static int PROGRESS_DELAY = 10;
     /**
      * 进度条半径
      */
@@ -109,12 +113,27 @@ public class LoadingBar extends View {
             public void run() {
                 if (isLoading) {
 
-                    if (mCurrentProgress > maxProgress) {
-                        mCurrentProgress = 0;
-                        isFirst = !isFirst;
+                    if (mProgressHead > mProgressFoot + 95) {
+                        isChanse = true;
                     }
-                    mCurrentProgress++;
-                    setProgress(mCurrentProgress);
+
+                    if (mProgressHead < mProgressFoot + 5) {
+                        isChanse = false;
+                    }
+                    if (isChanse) {
+                        mProgressFoot += 2;
+                        mProgressHead += 1;
+                    } else {
+                        mProgressFoot += 1;
+                        mProgressHead += 2;
+                    }
+                    if (mProgressHead >= maxProgress) {
+                        mProgressHead = 0;
+                        mProgressFoot = mProgressFoot - maxProgress;
+                    }
+
+                    setProgressFoot(mProgressFoot);
+                    setProgressHead(mProgressHead);
                     mHandlerLoading.postDelayed(mRunnableLoading, PROGRESS_DELAY);
                 }
             }
@@ -153,29 +172,31 @@ public class LoadingBar extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (isFirst) {
-            canvas.drawArc(mRectF, -90, 360, false, mPaintLoaded);
-            canvas.drawArc(mRectF, -90, calculateLoadedProgress(), false, mPaintProgress);
-
-        } else {
-            canvas.drawArc(mRectF, -90, 360, false, mPaintProgress);
-            canvas.drawArc(mRectF, -90, calculateLoadedProgress(), false, mPaintLoaded);
-        }
-
+        canvas.drawArc(mRectF, 0, 360, false, mPaintLoaded);
+        canvas.drawArc(mRectF, calculateProgressFoot(), calculateProgressHead(), false, mPaintProgress);
     }
 
-    private int calculateLoadedProgress() {
-        return (360 * mCurrentProgress) / maxProgress;
+    private int calculateProgressHead() {
+        return (360 * (mProgressHead-mProgressFoot)) / maxProgress;
     }
 
-    public void setProgress(int progress) {
-        this.mCurrentProgress = progress;
+    private int calculateProgressFoot() {
+        return (360 * mProgressFoot) / maxProgress;
+    }
+
+    public void setProgressHead(int progress) {
+        this.mProgressHead = progress;
+        postInvalidate();
+    }
+
+    public void setProgressFoot(int progress) {
+        this.mProgressFoot = progress;
         postInvalidate();
     }
 
     public void loading() {
         isLoading = true;
-        isFirst = true;
+        isChanse = false;
         mHandlerLoading.removeCallbacksAndMessages(null);
         mHandlerLoading.postDelayed(mRunnableLoading, PROGRESS_DELAY);
     }
