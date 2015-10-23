@@ -1,5 +1,6 @@
 package com.cnj.loadingbar;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,20 +17,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        lb = (LoadingBar) findViewById(R.id.lb_loading);
-        lb.loading();
-        findViewById(R.id.failed).setOnClickListener(new View.OnClickListener() {
+        final Intent intent =new Intent();
+        findViewById(R.id.loading).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lb.loadingComplete(false);
+                startActivity(intent.setClass(MainActivity.this,LoadingBarTestActivity.class));
             }
         });
 
-        findViewById(R.id.success).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.download).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lb.loadingComplete(true);
+                startActivity(intent.setClass(MainActivity.this,DownLoadActivity.class));
             }
         });
     }

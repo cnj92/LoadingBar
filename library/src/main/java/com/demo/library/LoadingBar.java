@@ -9,7 +9,6 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 
@@ -29,13 +28,9 @@ public class LoadingBar extends View {
      */
     private Paint mPaintLoaded;
     /**
-     * 进度条
+     * 进度条所在矩形
      */
     private RectF mRectF;
-    /**
-     * 加载结果画笔
-     */
-    private Paint mPaintResult;
     //中心点坐标
     private int mCenterX, mCenterY;
     /**
@@ -46,10 +41,6 @@ public class LoadingBar extends View {
      * 加载线程
      */
     private Runnable mRunnableLoading;
-    /**
-     * 加载结果监听器
-     */
-    private ResultListener mListener;
     /**
      * 进度条颜色
      */
@@ -71,16 +62,14 @@ public class LoadingBar extends View {
      */
     private boolean isLoading;
     /**
-     * 第一次旋转
+     * 头部速度大于尾部
      */
     private boolean isChanse;
     /**
      * 旋转睡眠时间
      */
     private static int PROGRESS_DELAY = 5;
-    /**
-     * 进度条半径
-     */
+
 
     /**
      * 加载完成动画路径1
@@ -133,10 +122,6 @@ public class LoadingBar extends View {
     }
 
     private void init(Context context, AttributeSet attrs) {
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.loadingbar);
-        mLoadingBarColor = a.getColor(R.styleable.loadingbar_progressColor, mLoadingBarColor);
-        a.recycle();
-
         mHandlerLoading = new Handler();
         mRunnableLoading = new Runnable() {
             @Override
@@ -194,7 +179,7 @@ public class LoadingBar extends View {
                     pathY += 5.0f;
                     setPaint1LineTo(pathX, pathY);
                     mHandlerSuccess.postDelayed(mRunnableSuccess, PROGRESS_DELAY);
-                } else if (pathX < minSide - mCenterX / 4 - padding-5) {
+                } else if (pathX < minSide - mCenterX / 4 - padding - 5) {
                     pathX += 5.0f;
                     pathY -= 5.5f;
                     setPaint1LineTo(pathX, pathY);
@@ -213,9 +198,6 @@ public class LoadingBar extends View {
         mPaintLoaded.setColor(Color.WHITE);
         mPaintLoaded.setStyle(Paint.Style.STROKE);
         mPaintLoaded.setStrokeWidth(13.0f);
-        mPaintResult = new Paint();
-        mPaintResult.setAntiAlias(true);
-        mPaintResult.setColor(Color.WHITE);
 
         mRectF = new RectF();
 
@@ -274,6 +256,10 @@ public class LoadingBar extends View {
     private void setPaint2LineTo(float x, float y) {
         this.mPath2.lineTo(x, y);
         postInvalidate();
+    }
+
+    public void setProgressColor(int color) {
+        this.mPaintProgress.setColor(color);
     }
 
     public void loading() {
