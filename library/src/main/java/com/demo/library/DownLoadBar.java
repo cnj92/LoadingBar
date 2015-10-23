@@ -84,23 +84,23 @@ public class DownLoadBar extends View {
      * 是否加载完成
      */
     private boolean isComplete = false;
+    /**
+     * 文字y坐标
+     */
+    private int textY;
 
     private Handler mHandlerSuccess;
 
     private Runnable mRunnableSuccess;
-    private int baseline;
 
     public DownLoadBar(Context context) {
         super(context);
         init();
     }
-
-
     public DownLoadBar(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
-
     public DownLoadBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
@@ -123,7 +123,6 @@ public class DownLoadBar extends View {
         mPaintText.setTextSize(FONT_SIZE);
         mPaintText.setColor(mLoadingBarColor);
         mPaintText.setTextAlign(Paint.Align.CENTER);
-//        Paint.FontMetricsInt fontMetrics = mPaintText.getFontMetricsInt();
 
         mRectF = new RectF();
 
@@ -158,7 +157,7 @@ public class DownLoadBar extends View {
         mCenterY = minSide / 2;
         mRectF.set(padding, padding, minSide - padding, minSide - padding);
         Paint.FontMetricsInt fontMetrics = mPaintText.getFontMetricsInt();
-        baseline = (minSide - fontMetrics.bottom + fontMetrics.top) / 2 - fontMetrics.top;
+        textY = (minSide - fontMetrics.bottom + fontMetrics.top) / 2 - fontMetrics.top;
 
 
     }
@@ -169,7 +168,7 @@ public class DownLoadBar extends View {
         canvas.drawArc(mRectF, 0, 360, false, mPaintProgressBg);
         if (isLoading) {
             if (mCurrentProgress < 100) {
-                canvas.drawText(mCurrentProgress + "%", mCenterX, baseline, mPaintText);
+                canvas.drawText(mCurrentProgress + "%", mCenterX, textY, mPaintText);
                 canvas.drawArc(mRectF, 0, calculateProgress(), false, mPaintProgress);
             } else {
                 canvas.drawArc(mRectF, 0, 360, false, mPaintProgress);
@@ -178,7 +177,7 @@ public class DownLoadBar extends View {
             }
         } else {
             canvas.drawArc(mRectF, 0, calculateProgress(), false, mPaintProgress);
-            canvas.drawText("| |", mCenterX, baseline, mPaintText);
+            canvas.drawText("| |", mCenterX, textY, mPaintText);
         }
     }
 

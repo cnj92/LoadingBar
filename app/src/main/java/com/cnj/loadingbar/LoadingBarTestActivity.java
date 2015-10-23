@@ -13,18 +13,18 @@ import com.demo.library.LoadingBar;
  */
 public class LoadingBarTestActivity extends AppCompatActivity{
     private LoadingBar lb;
-
+    private LoadingBar lbFailed;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_loading);
 
         lb = (LoadingBar) findViewById(R.id.lb_loading);
-        lb.loading();
+        lbFailed = (LoadingBar) findViewById(R.id.lb_loadingfailed);
         findViewById(R.id.failed).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lb.loadingComplete(false);
+                lbFailed.loadingComplete(false);
             }
         });
 

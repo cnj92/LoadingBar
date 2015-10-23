@@ -8,7 +8,7 @@
         android:id="@+id/start_success"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="开始(成功)" />
+        android:text="Start" />
 
     <com.demo.library.DownLoadBar
         android:id="@+id/dlb"

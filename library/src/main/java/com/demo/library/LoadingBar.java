@@ -203,6 +203,8 @@ public class LoadingBar extends View {
 
         mPath1 = new Path();
         mPath2 = new Path();
+
+        loading();
     }
 
     @Override
